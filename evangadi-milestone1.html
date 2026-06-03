@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Powered Evangadi Forum – Milestone 1 Authentication Workflow</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --bg: #050810;
+  --surface: #0d1117;
+  --surface2: #161b27;
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.08);
+  --accent: #00d4ff;
+  --accent2: #7c3aed;
+  --accent3: #10b981;
+  --accent4: #f59e0b;
+  --accent5: #ef4444;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --glow: rgba(0,212,255,0.15);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);overflow-x:hidden;line-height:1.6}
+
+/* ── CANVAS PARTICLES ── */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;width:100%;z-index:1000;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(5,8,16,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
+.nav-logo{font-family:var(--font-display);font-size:1.1rem;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:500;transition:.2s;letter-spacing:.03em}
+.nav-links a:hover{color:var(--accent)}
+
+/* ── SECTIONS ── */
+section{position:relative;z-index:1;padding:5rem 2rem}
+.container{max-width:1200px;margin:0 auto}
+.section-label{font-family:var(--font-mono);font-size:.75rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.75rem}
+.section-title{font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;line-height:1.1;margin-bottom:1rem}
+.section-sub{color:var(--muted);font-size:1rem;max-width:600px}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;align-items:center;padding-top:6rem}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--glass);border:1px solid var(--glass-border);border-radius:50px;padding:.4rem 1rem;font-size:.8rem;color:var(--accent);margin-bottom:1.5rem;animation:fadeUp .6s ease both}
+.hero-title{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.05;margin-bottom:1rem;animation:fadeUp .7s ease both .1s}
+.hero-title span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{color:var(--muted);font-size:1.05rem;margin-bottom:2rem;animation:fadeUp .7s ease both .2s}
+.hero-author{display:flex;align-items:center;gap:.75rem;animation:fadeUp .7s ease both .3s}
+.author-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem}
+.author-info small{color:var(--muted);font-size:.78rem}
+.hero-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;animation:fadeUp .7s ease both .4s}
+.stat-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:1.25rem;text-align:center;transition:.3s;cursor:default}
+.stat-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 0 30px var(--glow)}
+.stat-num{font-family:var(--font-display);font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-lbl{color:var(--muted);font-size:.8rem;margin-top:.2rem}
+
+/* AUTH ILLUSTRATION */
+.hero-visual{position:relative;animation:fadeUp .8s ease both .2s}
+.auth-ring{width:320px;height:320px;margin:0 auto;position:relative}
+.ring{position:absolute;border-radius:50%;border:1px solid;animation:spin linear infinite}
+.ring-1{inset:0;border-color:rgba(0,212,255,.2);animation-duration:20s}
+.ring-2{inset:20px;border-color:rgba(124,58,237,.2);animation-duration:15s;animation-direction:reverse}
+.ring-3{inset:40px;border-color:rgba(16,185,129,.2);animation-duration:10s}
+.ring-center{position:absolute;inset:80px;background:var(--glass);border:1px solid var(--glass-border);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px)}
+.ring-center i{font-size:3rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.orbit-dot{position:absolute;width:10px;height:10px;border-radius:50%;top:50%;left:50%;transform-origin:-130px 0}
+.orbit-dot-1{background:var(--accent);animation:orbit 6s linear infinite}
+.orbit-dot-2{background:var(--accent2);animation:orbit 9s linear infinite;transform-origin:-100px 0}
+.orbit-dot-3{background:var(--accent3);animation:orbit 12s linear infinite;transform-origin:-75px 0}
+
+/* ── TEAM SECTION ── */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-top:2.5rem}
+.team-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;padding:1.5rem;transition:.35s;position:relative;overflow:hidden;opacity:0;transform:translateY(30px)}
+.team-card.visible{opacity:1;transform:translateY(0)}
+.team-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(0,212,255,.05));opacity:0;transition:.3s}
+.team-card:hover::before{opacity:1}
+.team-card:hover{border-color:var(--accent);transform:translateY(-5px);box-shadow:0 20px 60px rgba(0,212,255,.1)}
+.team-role{font-family:var(--font-mono);font-size:.7rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem}
+.team-task{font-size:1rem;font-weight:600;margin-bottom:.5rem}
+.team-members{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+.member-chip{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:50px;padding:.25rem .7rem;font-size:.78rem;color:#a78bfa}
+.task-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);border-radius:8px;padding:.3rem .7rem;font-family:var(--font-mono);font-size:.75rem;color:var(--accent);margin-bottom:.5rem}
+
+/* ── WORKFLOW ── */
+#workflow{background:linear-gradient(180deg,transparent,rgba(124,58,237,.05),transparent)}
+.workflow-container{display:flex;flex-wrap:wrap;gap:0;justify-content:center;align-items:stretch;margin-top:3rem;position:relative}
+.wf-node{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:.3s;position:relative;min-width:110px;flex:1;max-width:130px}
+.wf-node:hover,.wf-node.active{border-color:var(--accent);background:rgba(0,212,255,.08);transform:scale(1.05);box-shadow:0 0 40px rgba(0,212,255,.2)}
+.wf-arrow{display:flex;align-items:center;color:var(--accent);font-size:1.2rem;padding:0 .25rem;opacity:.6;flex-shrink:0;align-self:center}
+.wf-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:1.3rem}
+.wf-label{font-size:.75rem;font-weight:600;line-height:1.3}
+.wf-task{font-family:var(--font-mono);font-size:.65rem;color:var(--accent);margin-top:.25rem}
+.packet{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--accent);pointer-events:none;display:none}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(5,8,16,.85);backdrop-filter:blur(12px);z-index:2000;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface2);border:1px solid var(--glass-border);border-radius:24px;padding:2rem;max-width:520px;width:100%;position:relative;animation:scaleIn .25s ease}
+.modal-close{position:absolute;top:1rem;right:1rem;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.2s}
+.modal-close:hover{color:var(--text);border-color:var(--accent)}
+.modal-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1rem}
+.modal h3{font-family:var(--font-display);font-size:1.4rem;font-weight:800;margin-bottom:.25rem}
+.modal-meta{font-family:var(--font-mono);font-size:.72rem;color:var(--accent);margin-bottom:1rem}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.25rem}
+.modal-section h4{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
+.modal-section ul{list-style:none}
+.modal-section ul li{font-size:.85rem;padding:.2rem 0;display:flex;gap:.5rem;align-items:flex-start}
+.modal-section ul li::before{content:'›';color:var(--accent);flex-shrink:0}
+
+/* ── ARCHITECTURE ── */
+.arch-flow{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:2.5rem}
+.arch-node{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:.9rem 2rem;text-align:center;min-width:220px;position:relative;transition:.3s}
+.arch-node:hover{border-color:var(--accent);box-shadow:0 0 30px var(--glow)}
+.arch-node .node-label{font-size:.9rem;font-weight:600}
+.arch-node .node-desc{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+.arch-connector{display:flex;flex-direction:column;align-items:center;height:40px;position:relative}
+.arch-connector .line{width:2px;flex:1;background:linear-gradient(180deg,var(--accent),var(--accent2));opacity:.4;position:relative;overflow:hidden}
+.arch-connector .line::after{content:'';position:absolute;top:-100%;width:100%;height:50%;background:white;opacity:.8;animation:flowDown 1.5s linear infinite}
+.arch-connector i{color:var(--accent);font-size:.9rem;opacity:.7}
+.arch-duo{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2.5rem}
+
+/* ── GIT BRANCH ── */
+.git-tree{font-family:var(--font-mono);font-size:.85rem;background:var(--surface2);border:1px solid var(--glass-border);border-radius:20px;padding:2rem;margin-top:2rem;position:relative;overflow:hidden}
+.git-tree::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3))}
+.git-line{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;opacity:0;transform:translateX(-20px);transition:.4s}
+.git-line.visible{opacity:1;transform:translateX(0)}
+.git-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.git-dot.main{background:var(--accent)}
+.git-dot.feature{background:var(--accent2)}
+.git-branch-label{color:var(--accent);font-weight:600}
+.git-feature{color:#a78bfa}
+.git-indent{padding-left:1.5rem;color:var(--muted)}
+.merge-arrow{color:var(--accent3);margin-left:auto;font-size:.75rem}
+
+/* ── SPRINT PROGRESS ── */
+.sprint-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem;margin-top:2.5rem}
+.sprint-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:18px;padding:1.5rem;opacity:0;transform:translateY(20px);transition:.4s}
+.sprint-card.visible{opacity:1;transform:translateY(0)}
+.sprint-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.sprint-task{font-weight:600;font-size:.95rem}
+.sprint-id{font-family:var(--font-mono);font-size:.72rem;color:var(--muted)}
+.badge{border-radius:50px;padding:.2rem .7rem;font-size:.72rem;font-weight:600;font-family:var(--font-mono)}
+.badge-todo{background:rgba(100,116,139,.2);color:#94a3b8;border:1px solid rgba(100,116,139,.3)}
+.badge-progress{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
+.badge-review{background:rgba(0,212,255,.12);color:var(--accent);border:1px solid rgba(0,212,255,.25)}
+.badge-done{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.3)}
+.progress-bar{height:6px;background:rgba(255,255,255,.07);border-radius:50px;overflow:hidden;margin-top:.75rem}
+.progress-fill{height:100%;border-radius:50px;transition:width 1.5s cubic-bezier(.4,0,.2,1)}
+.sprint-members{margin-top:.75rem;font-size:.8rem;color:var(--muted)}
+
+/* ── JOURNEY ANIMATION ── */
+#journey{background:linear-gradient(180deg,transparent,rgba(0,212,255,.03),transparent)}
+.journey-track{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin-top:3rem;position:relative}
+.journey-step{display:flex;flex-direction:column;align-items:center;opacity:.3;transition:.6s}
+.journey-step.lit{opacity:1;transform:scale(1.05)}
+.journey-step.lit .j-icon{box-shadow:0 0 40px var(--glow);border-color:var(--accent)}
+.j-icon{width:64px;height:64px;border-radius:16px;border:2px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--glass);transition:.5s;backdrop-filter:blur(10px)}
+.j-label{font-size:.75rem;font-weight:600;margin-top:.6rem;text-align:center;max-width:80px}
+.j-arrow{color:var(--accent);font-size:1.2rem;margin:0 .25rem;opacity:.5;align-self:center;margin-bottom:1.5rem}
+.journey-btn{display:flex;gap:1rem;justify-content:center;margin-top:2.5rem}
+.btn{padding:.75rem 1.75rem;border-radius:12px;font-family:var(--font-body);font-size:.9rem;font-weight:600;cursor:pointer;transition:.25s;border:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-primary:hover{opacity:.85;transform:translateY(-2px)}
+.btn-ghost{background:var(--glass);border:1px solid var(--glass-border);color:var(--text)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── DOD SECTION ── */
+.dod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:2.5rem}
+.dod-item{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;opacity:0;transform:translateX(-20px);transition:.4s}
+.dod-item.visible{opacity:1;transform:translateX(0)}
+.dod-check{width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);display:flex;align-items:center;justify-content:center;color:#34d399;flex-shrink:0;font-size:1rem}
+.dod-text{font-size:.9rem;font-weight:500}
+
+/* ── FOOTER ── */
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--glass-border);color:var(--muted);font-size:.85rem}
+footer strong{color:var(--accent)}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes orbit{from{transform:rotate(0deg) translateX(130px) rotate(0deg)}to{transform:rotate(360deg) translateX(130px) rotate(-360deg)}}
+@keyframes flowDown{from{top:-100%}to{top:200%}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes dash{to{stroke-dashoffset:-20}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px var(--glow)}50%{box-shadow:0 0 50px var(--glow)}}
+
+/* Mobile */
+@media(max-width:768px){
+  .hero-inner{grid-template-columns:1fr}
+  .auth-ring{width:220px;height:220px}
+  .arch-duo{grid-template-columns:1fr}
+  .wf-node{min-width:80px;padding:.75rem .5rem}
+  nav .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">⚡ Evangadi Forum</div>
+  <ul class="nav-links">
+    <li><a href="#hero">Overview</a></li>
+    <li><a href="#team">Teams</a></li>
+    <li><a href="#workflow">Workflow</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#git">Git</a></li>
+    <li><a href="#sprint">Sprint</a></li>
+    <li><a href="#journey">Journey</a></li>
+    <li><a href="#dod">DoD</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section id="hero">
+<div class="container">
+<div class="hero-inner">
+  <div>
+    <div class="hero-badge"><i class="fas fa-shield-halved"></i> Milestone 1 · Authentication</div>
+    <h1 class="hero-title">AI-Powered<br><span>Evangadi Forum</span><br>Authentication</h1>
+    <p class="hero-sub">Complete authentication workflow — from public landing page to protected dashboard — built by 6 cross-functional teams across one focused sprint.</p>
+    <div class="hero-author">
+      <div class="author-avatar">SS</div>
+      <div class="author-info">
+        <div style="font-weight:600;font-size:.9rem">Sisay Shimelash</div>
+        <small>Scrum Master · Milestone 1</small>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="hero-visual">
+      <div class="auth-ring">
+        <div class="ring ring-1"></div>
+        <div class="ring ring-2"></div>
+        <div class="ring ring-3"></div>
+        <div class="ring-center"><i class="fas fa-lock-open"></i></div>
+        <div class="orbit-dot orbit-dot-1"></div>
+        <div class="orbit-dot orbit-dot-2"></div>
+        <div class="orbit-dot orbit-dot-3"></div>
+      </div>
+    </div>
+    <div class="hero-stats" style="margin-top:2rem">
+      <div class="stat-card"><div class="stat-num" data-count="13">0</div><div class="stat-lbl">Team Members</div></div>
+      <div class="stat-card"><div class="stat-num" data-count="6">0</div><div class="stat-lbl">Dev Teams</div></div>
+      <div class="stat-card"><div class="stat-num" data-count="5">0</div><div class="stat-lbl">Core Tasks</div></div>
+      <div class="stat-card"><div class="stat-num" data-count="1">0</div><div class="stat-lbl">Sprint Goal</div></div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     TEAM
+══════════════════════════════════════════ -->
+<section id="team">
+<div class="container">
+  <div class="section-label">Section 02</div>
+  <h2 class="section-title">Team Assignments</h2>
+  <p class="section-sub">Six specialized teams working in parallel to deliver the full authentication stack.</p>
+  <div class="team-grid">
+
+    <!-- Backend -->
+    <div class="team-card">
+      <div class="team-role"><i class="fas fa-server" style="margin-right:.4rem"></i>Backend Team</div>
+      <div class="task-badge"><i class="fas fa-tag"></i>T-04</div>
+      <div class="team-task">Register User API</div>
+      <p style="font-size:.83rem;color:var(--muted)">POST /api/user/register · Validation, hashing, DB insert</p>
+      <div class="team-members">
+        <span class="member-chip">Kaleab</span>
+        <span class="member-chip">Betiz</span>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-role"><i class="fas fa-server" style="margin-right:.4rem"></i>Backend Team</div>
+      <div class="task-badge"><i class="fas fa-tag"></i>T-05</div>
+      <div class="team-task">Login User API</div>
+      <p style="font-size:.83rem;color:var(--muted)">POST /api/user/login · Auth check, JWT sign & return</p>
+      <div class="team-members">
+        <span class="member-chip">Hanna</span>
+        <span class="member-chip">Aron</span>
+      </div>
+    </div>
+
+    <!-- Frontend -->
+    <div class="team-card">
+      <div class="team-role" style="color:var(--accent3)"><i class="fas fa-code" style="margin-right:.4rem"></i>Frontend Team</div>
+      <div class="task-badge" style="background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.25);color:var(--accent3)"><i class="fas fa-tag"></i>T-06</div>
+      <div class="team-task">Axios + Auth Service</div>
+      <p style="font-size:.83rem;color:var(--muted)">Axios instance · interceptors · auth API calls</p>
+      <div class="team-members">
+        <span class="member-chip" style="background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.25);color:#6ee7b7">Sitota</span>
+        <span class="member-chip" style="background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.25);color:#6ee7b7">Nejat</span>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-role" style="color:var(--accent3)"><i class="fas fa-code" style="margin-right:.4rem"></i>Frontend Team</div>
+      <div class="task-badge" style="background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.25);color:var(--accent3)"><i class="fas fa-tag"></i>T-07</div>
+      <div class="team-task">Auth Page UI</div>
+      <p style="font-size:.83rem;color:var(--muted)">Login + Register forms · validation · responsive</p>
+      <div class="team-members">
+        <span class="member-chip" style="background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.25);color:#6ee7b7">Yesgat</span>
+        <span class="member-chip" style="background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.25);color:#6ee7b7">Redi</span>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-role" style="color:var(--accent3)"><i class="fas fa-code" style="margin-right:.4rem"></i>Frontend Team</div>
+      <div class="task-badge" style="background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.25);color:var(--accent3)"><i class="fas fa-tag"></i>T-08</div>
+      <div class="team-task">AuthContext + ProtectedRoute</div>
+      <p style="font-size:.83rem;color:var(--muted)">Global auth state · route guards · localStorage</p>
+      <div class="team-members">
+        <span class="member-chip" style="background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.25);color:#6ee7b7">Yoni</span>
+        <span class="member-chip" style="background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.25);color:#6ee7b7">Edris</span>
+      </div>
+    </div>
+
+    <div class="team-card">
+      <div class="team-role" style="color:var(--accent4)"><i class="fas fa-globe" style="margin-right:.4rem"></i>Frontend Team</div>
+      <div class="task-badge" style="background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.25);color:var(--accent4)"><i class="fas fa-tag"></i>T-00</div>
+      <div class="team-task">Public Landing Page</div>
+      <p style="font-size:.83rem;color:var(--muted)">Hero · features · CTA · fully public, no auth</p>
+      <div class="team-members">
+        <span class="member-chip" style="background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.25);color:#fcd34d">Shime</span>
+        <span class="member-chip" style="background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.25);color:#fcd34d">Alex</span>
+      </div>
+    </div>
+
+    <!-- Scrum -->
+    <div class="team-card" style="border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.04)">
+      <div class="team-role" style="color:#f87171"><i class="fas fa-flag" style="margin-right:.4rem"></i>Scrum Master</div>
+      <div class="team-task" style="font-size:1.1rem">Sprint Leadership</div>
+      <p style="font-size:.83rem;color:var(--muted);margin-top:.4rem">Sprint planning · daily standups · retrospective · blocker removal</p>
+      <div class="team-members" style="margin-top:.75rem">
+        <span class="member-chip" style="background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);color:#f87171">Sisay Shimelash</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     WORKFLOW
+══════════════════════════════════════════ -->
+<section id="workflow">
+<div class="container">
+  <div class="section-label">Section 03</div>
+  <h2 class="section-title">Interactive Auth Workflow</h2>
+  <p class="section-sub">Click any node to explore its purpose, team, deliverables and dependencies.</p>
+
+  <div class="workflow-container" id="wfContainer">
+    <!-- nodes injected by JS -->
+  </div>
+
+  <p style="text-align:center;color:var(--muted);font-size:.8rem;margin-top:1.5rem"><i class="fas fa-hand-pointer" style="color:var(--accent)"></i> Click a node for details</p>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     ARCHITECTURE
+══════════════════════════════════════════ -->
+<section id="architecture">
+<div class="container">
+  <div class="section-label">Section 04 &amp; 05</div>
+  <h2 class="section-title">System Architecture</h2>
+  <p class="section-sub">Backend and frontend layers visualized with animated data flow.</p>
+  <div class="arch-duo">
+
+    <!-- Backend -->
+    <div>
+      <h3 style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:1.5rem;color:var(--accent)"><i class="fas fa-server" style="margin-right:.5rem"></i>Backend Architecture</h3>
+      <div class="arch-flow" id="backendFlow">
+        <div class="arch-node" style="border-color:rgba(0,212,255,.3)"><div class="node-label">📡 User Request</div><div class="node-desc">HTTP POST to API endpoint</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node"><div class="node-label">🛣️ Routes</div><div class="node-desc">Express router definitions</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node"><div class="node-label">🛡️ Validation Middleware</div><div class="node-desc">Input sanitization & checks</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node"><div class="node-label">🎮 Controller</div><div class="node-desc">Orchestrates the request</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node"><div class="node-label">⚙️ Service Layer</div><div class="node-desc">Business logic & bcrypt</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node" style="border-color:rgba(16,185,129,.3)"><div class="node-label">🗄️ Database</div><div class="node-desc">MySQL — users table</div></div>
+      </div>
+    </div>
+
+    <!-- Frontend -->
+    <div>
+      <h3 style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:1.5rem;color:var(--accent3)"><i class="fas fa-layer-group" style="margin-right:.5rem"></i>Frontend Architecture</h3>
+      <div class="arch-flow">
+        <div class="arch-node" style="border-color:rgba(245,158,11,.3)"><div class="node-label">🌐 Landing Page (T-00)</div><div class="node-desc">Public entry point</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node"><div class="node-label">🔐 Auth UI (T-07)</div><div class="node-desc">Login / Register forms</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node"><div class="node-label">📡 Axios Service (T-06)</div><div class="node-desc">HTTP client + interceptors</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node"><div class="node-label">🔗 Backend API</div><div class="node-desc">T-04 Register · T-05 Login</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node" style="border-color:rgba(0,212,255,.3)"><div class="node-label">🔑 JWT Token</div><div class="node-desc">Signed token returned</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node"><div class="node-label">🗂️ AuthContext (T-08)</div><div class="node-desc">Global state · localStorage</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node"><div class="node-label">🚧 Protected Routes</div><div class="node-desc">Guards unauthenticated access</div></div>
+        <div class="arch-connector"><div class="line"></div><i class="fas fa-chevron-down"></i></div>
+        <div class="arch-node" style="border-color:rgba(16,185,129,.3)"><div class="node-label">🏠 Dashboard</div><div class="node-desc">Authenticated home</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     GIT WORKFLOW
+══════════════════════════════════════════ -->
+<section id="git">
+<div class="container">
+  <div class="section-label">Section 06</div>
+  <h2 class="section-title">Git Branch Strategy</h2>
+  <p class="section-sub">Feature branches created from main, reviewed via pull request, then merged.</p>
+  <div class="git-tree" id="gitTree">
+    <div class="git-line"><div class="git-dot main"></div><span class="git-branch-label">main</span><span class="merge-arrow"><i class="fas fa-code-merge"></i> production</span></div>
+    <div class="git-line"><div style="width:2px;height:16px;background:rgba(0,212,255,.3);margin-left:5px"></div></div>
+    <div class="git-line"><span class="git-indent">├─</span><div class="git-dot feature"></div><span class="git-feature">feature/register-user</span><span class="merge-arrow" style="color:#a78bfa">T-04 · Kaleab + Betiz</span></div>
+    <div class="git-line"><span class="git-indent">├─</span><div class="git-dot feature"></div><span class="git-feature">feature/login-user</span><span class="merge-arrow" style="color:#a78bfa">T-05 · Hanna + Aron</span></div>
+    <div class="git-line"><span class="git-indent">├─</span><div class="git-dot feature"></div><span class="git-feature">feature/auth-service</span><span class="merge-arrow" style="color:#a78bfa">T-06 · Sitota + Nejat</span></div>
+    <div class="git-line"><span class="git-indent">├─</span><div class="git-dot feature"></div><span class="git-feature">feature/auth-ui</span><span class="merge-arrow" style="color:#a78bfa">T-07 · Yesgat + Redi</span></div>
+    <div class="git-line"><span class="git-indent">├─</span><div class="git-dot feature"></div><span class="git-feature">feature/auth-context</span><span class="merge-arrow" style="color:#a78bfa">T-08 · Yoni + Edris</span></div>
+    <div class="git-line"><span class="git-indent">└─</span><div class="git-dot feature" style="background:var(--accent4)"></div><span class="git-feature" style="color:#fcd34d">feature/landing-page</span><span class="merge-arrow" style="color:#fcd34d">T-00 · Shime + Alex</span></div>
+    <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--glass-border);font-size:.8rem;color:var(--muted)">
+      <span style="color:var(--accent3)"><i class="fas fa-circle-check"></i></span> All branches → PR review → merge to main · No direct commits to main
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SPRINT PROGRESS
+══════════════════════════════════════════ -->
+<section id="sprint">
+<div class="container">
+  <div class="section-label">Section 07</div>
+  <h2 class="section-title">Sprint Progress Dashboard</h2>
+  <p class="section-sub">Real-time tracking of all Milestone 1 tasks across the team.</p>
+  <div class="sprint-grid" id="sprintGrid"></div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     JOURNEY
+══════════════════════════════════════════ -->
+<section id="journey">
+<div class="container">
+  <div class="section-label">Section 08</div>
+  <h2 class="section-title">Authentication Journey</h2>
+  <p class="section-sub">The complete user flow from first visit to protected dashboard access.</p>
+  <div class="journey-track" id="journeyTrack"></div>
+  <div class="journey-btn">
+    <button class="btn btn-primary" onclick="startJourney()"><i class="fas fa-play" style="margin-right:.5rem"></i>Play Journey</button>
+    <button class="btn btn-ghost" onclick="resetJourney()"><i class="fas fa-rotate-left" style="margin-right:.5rem"></i>Reset</button>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     DOD
+══════════════════════════════════════════ -->
+<section id="dod">
+<div class="container">
+  <div class="section-label">Section 09</div>
+  <h2 class="section-title">Definition of Done</h2>
+  <p class="section-sub">Milestone 1 is complete when every item below is verified ✓</p>
+  <div class="dod-grid" id="dodGrid"></div>
+</div>
+</section>
+
+<footer>
+  <p>AI-Powered Evangadi Forum · Milestone 1 Authentication · Prepared by <strong>Sisay Shimelash</strong> · Scrum Master</p>
+  <p style="margin-top:.5rem;font-size:.78rem">© 2025 Evangadi Dev Teams · 12 Members · 6 Teams · 1 Goal</p>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()"><i class="fas fa-xmark"></i></button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+/* ────────────────────────────────────────
+   PARTICLE CANVAS
+──────────────────────────────────────── */
+const canvas=document.getElementById('particles');
+const ctx=canvas.getContext('2d');
+let W,H,pts=[];
+function resizeCanvas(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+resizeCanvas();window.addEventListener('resize',resizeCanvas);
+for(let i=0;i<70;i++)pts.push({x:Math.random()*2000,y:Math.random()*2000,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5});
+function drawParticles(){
+  ctx.clearRect(0,0,W,H);
+  pts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(0,212,255,.18)';ctx.fill();
+  });
+  pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{
+    const d=Math.hypot(a.x-b.x,a.y-b.y);
+    if(d<120){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,212,255,${.08*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke()}
+  }));
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+/* ────────────────────────────────────────
+   COUNTER ANIMATION
+──────────────────────────────────────── */
+function animateCounters(){
+  document.querySelectorAll('[data-count]').forEach(el=>{
+    const target=+el.dataset.count;
+    let n=0;const step=Math.ceil(target/30);
+    const t=setInterval(()=>{n=Math.min(n+step,target);el.textContent=n;if(n>=target)clearInterval(t)},40);
+  });
+}
+setTimeout(animateCounters,800);
+
+/* ────────────────────────────────────────
+   SCROLL OBSERVER
+──────────────────────────────────────── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('visible'),e.target.dataset.delay||0);
+    }
+  });
+},{threshold:.15});
+function observe(sel,delayBase=0){
+  document.querySelectorAll(sel).forEach((el,i)=>{el.dataset.delay=delayBase+i*80;obs.observe(el)});
+}
+
+/* ────────────────────────────────────────
+   WORKFLOW NODES
+──────────────────────────────────────── */
+const wfData=[
+  {id:'t00',icon:'🌐',label:'Landing Page',task:'T-00',color:'#f59e0b',
+    purpose:'Public entry point for all visitors. No authentication required.',
+    team:['Shime','Alex'],
+    deliverables:['Hero section','Feature highlights','CTA buttons','Responsive layout'],
+    deps:['None — entry point']},
+  {id:'t07a',icon:'🔐',label:'Auth Page',task:'T-07',color:'#7c3aed',
+    purpose:'Login and Register UI forms with client-side validation.',
+    team:['Yesgat','Redi'],
+    deliverables:['Login form','Register form','Error display','Form validation'],
+    deps:['T-00 Landing Page']},
+  {id:'t04',icon:'📝',label:'Register API',task:'T-04',color:'#00d4ff',
+    purpose:'Backend endpoint to create new user accounts with hashed passwords.',
+    team:['Kaleab','Betiz'],
+    deliverables:['POST /api/user/register','Input validation','bcrypt hashing','DB insert'],
+    deps:['Database schema','Validation middleware']},
+  {id:'t05',icon:'🔑',label:'Login API',task:'T-05',color:'#00d4ff',
+    purpose:'Backend endpoint that verifies credentials and issues JWT tokens.',
+    team:['Hanna','Aron'],
+    deliverables:['POST /api/user/login','Password verification','JWT sign','Token response'],
+    deps:['T-04 Register (user exists)','JWT secret configured']},
+  {id:'jwt',icon:'🎫',label:'JWT Token',task:'AUTH',color:'#10b981',
+    purpose:'Signed JSON Web Token stores user identity and expiry for stateless auth.',
+    team:['Hanna','Aron'],
+    deliverables:['Token payload','HS256 signature','Expiry set','Return to client'],
+    deps:['T-05 Login API']},
+  {id:'t06',icon:'📡',label:'Axios Service',task:'T-06',color:'#10b981',
+    purpose:'Configured Axios instance with interceptors that attach JWT to every request.',
+    team:['Sitota','Nejat'],
+    deliverables:['Axios instance','Auth header interceptor','Error handler','API functions'],
+    deps:['T-04 & T-05 API endpoints']},
+  {id:'t08a',icon:'🗂️',label:'AuthContext',task:'T-08',color:'#7c3aed',
+    purpose:'React Context that stores auth state globally — user, token, login/logout.',
+    team:['Yoni','Edris'],
+    deliverables:['AuthContext','useAuth hook','localStorage sync','login/logout functions'],
+    deps:['T-06 Axios Service']},
+  {id:'t08b',icon:'🚧',label:'Protected Route',task:'T-08',color:'#7c3aed',
+    purpose:'HOC that redirects unauthenticated users away from protected pages.',
+    team:['Yoni','Edris'],
+    deliverables:['ProtectedRoute component','Redirect logic','Loading state','Role checks'],
+    deps:['AuthContext']},
+  {id:'dash',icon:'🏠',label:'Dashboard',task:'DONE',color:'#10b981',
+    purpose:'Authenticated home. Only reachable once JWT is valid and AuthContext confirms user.',
+    team:['All Teams'],
+    deliverables:['Auth-gated view','User data display','Logout option','Forum access'],
+    deps:['All T-00 through T-08']},
+];
+
+const wfCont=document.getElementById('wfContainer');
+wfData.forEach((n,i)=>{
+  if(i>0){
+    const arr=document.createElement('div');
+    arr.className='wf-arrow';arr.innerHTML='<i class="fas fa-chevron-right"></i>';
+    wfCont.appendChild(arr);
+  }
+  const nd=document.createElement('div');
+  nd.className='wf-node';nd.id='wf_'+n.id;
+  nd.innerHTML=`<div class="wf-icon" style="background:${n.color}18;border:1px solid ${n.color}33;color:${n.color}">${n.icon}</div><div class="wf-label">${n.label}</div><div class="wf-task">${n.task}</div>`;
+  nd.addEventListener('click',()=>openModal(n));
+  wfCont.appendChild(nd);
+});
+
+/* ────────────────────────────────────────
+   MODAL
+──────────────────────────────────────── */
+function openModal(n){
+  document.querySelectorAll('.wf-node').forEach(nd=>nd.classList.remove('active'));
+  document.getElementById('wf_'+n.id)?.classList.add('active');
+  document.getElementById('modalContent').innerHTML=`
+    <div class="modal-icon" style="background:${n.color}18;border:1px solid ${n.color}33;font-size:1.8rem">${n.icon}</div>
+    <h3>${n.label}</h3>
+    <div class="modal-meta">${n.task}</div>
+    <p style="font-size:.88rem;color:var(--muted);line-height:1.6">${n.purpose}</p>
+    <div class="modal-grid">
+      <div class="modal-section">
+        <h4><i class="fas fa-users" style="color:${n.color};margin-right:.3rem"></i>Team</h4>
+        <ul>${n.team.map(m=>`<li>${m}</li>`).join('')}</ul>
+      </div>
+      <div class="modal-section">
+        <h4><i class="fas fa-box" style="color:${n.color};margin-right:.3rem"></i>Deliverables</h4>
+        <ul>${n.deliverables.map(d=>`<li>${d}</li>`).join('')}</ul>
+      </div>
+    </div>
+    <div class="modal-section" style="margin-top:1rem">
+      <h4><i class="fas fa-link" style="color:${n.color};margin-right:.3rem"></i>Dependencies</h4>
+      <ul style="display:flex;gap:.5rem;flex-wrap:wrap;list-style:none">${n.deps.map(d=>`<li style="background:rgba(255,255,255,.06);border:1px solid var(--glass-border);border-radius:8px;padding:.2rem .6rem;font-size:.78rem">${d}</li>`).join('')}</ul>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.querySelectorAll('.wf-node').forEach(nd=>nd.classList.remove('active'));
+}
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+
+/* ────────────────────────────────────────
+   SPRINT DATA
+──────────────────────────────────────── */
+const sprintData=[
+  {id:'T-00',name:'Public Landing Page',team:'Shime + Alex',status:'done',pct:100,color:'#f59e0b'},
+  {id:'T-04',name:'Register User API',team:'Kaleab + Betiz',status:'done',pct:100,color:'#00d4ff'},
+  {id:'T-05',name:'Login User API',team:'Hanna + Aron',status:'review',pct:85,color:'#00d4ff'},
+  {id:'T-06',name:'Axios + Auth Service',team:'Sitota + Nejat',status:'progress',pct:65,color:'#10b981'},
+  {id:'T-07',name:'Auth Page UI',team:'Yesgat + Redi',status:'progress',pct:70,color:'#7c3aed'},
+  {id:'T-08',name:'AuthContext + ProtectedRoute',team:'Yoni + Edris',status:'todo',pct:20,color:'#ef4444'},
+];
+const statusMap={todo:['TODO','badge-todo'],progress:['IN PROGRESS','badge-progress'],review:['REVIEW','badge-review'],done:['DONE','badge-done']};
+const barColors={done:'linear-gradient(90deg,#10b981,#34d399)',review:'linear-gradient(90deg,var(--accent),#67e8f9)',progress:'linear-gradient(90deg,#f59e0b,#fcd34d)',todo:'linear-gradient(90deg,#475569,#94a3b8)'};
+const grid=document.getElementById('sprintGrid');
+sprintData.forEach((s,i)=>{
+  const [lbl,cls]=statusMap[s.status];
+  const c=document.createElement('div');c.className='sprint-card';
+  c.style.transitionDelay=i*80+'ms';
+  c.innerHTML=`
+    <div class="sprint-header">
+      <div><div class="sprint-id">${s.id}</div><div class="sprint-task">${s.name}</div></div>
+      <span class="badge ${cls}">${lbl}</span>
+    </div>
+    <div class="sprint-members"><i class="fas fa-users" style="margin-right:.4rem;color:${s.color}"></i>${s.team}</div>
+    <div class="progress-bar"><div class="progress-fill" style="width:0%;background:${barColors[s.status]}" data-pct="${s.pct}"></div></div>
+    <div style="text-align:right;font-family:var(--font-mono);font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.pct}%</div>`;
+  grid.appendChild(c);
+});
+observe('.sprint-card');
+const barObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.progress-fill').forEach(b=>b.style.width=b.dataset.pct+'%')}});
+},{threshold:.3});
+document.querySelectorAll('.sprint-card').forEach(c=>barObs.observe(c));
+
+/* ────────────────────────────────────────
+   JOURNEY ANIMATION
+──────────────────────────────────────── */
+const journeySteps=[
+  {icon:'👤',label:'User'},
+  {icon:'🌐',label:'Landing Page'},
+  {icon:'📝',label:'Register'},
+  {icon:'🔐',label:'Login'},
+  {icon:'🎫',label:'JWT Generated'},
+  {icon:'💾',label:'Token Stored'},
+  {icon:'🚧',label:'Protected Route'},
+  {icon:'🏠',label:'Dashboard'},
+];
+const jTrack=document.getElementById('journeyTrack');
+journeySteps.forEach((s,i)=>{
+  if(i>0){const arr=document.createElement('div');arr.className='j-arrow';arr.innerHTML='<i class="fas fa-chevron-right"></i>';jTrack.appendChild(arr);}
+  const step=document.createElement('div');step.className='journey-step';step.id='js_'+i;
+  step.innerHTML=`<div class="j-icon">${s.icon}</div><div class="j-label">${s.label}</div>`;
+  jTrack.appendChild(step);
+});
+let journeyTimer=null,jIdx=0;
+function startJourney(){
+  resetJourney();
+  jIdx=0;
+  journeyTimer=setInterval(()=>{
+    document.getElementById('js_'+jIdx)?.classList.add('lit');
+    jIdx++;
+    if(jIdx>=journeySteps.length)clearInterval(journeyTimer);
+  },700);
+}
+function resetJourney(){
+  clearInterval(journeyTimer);
+  document.querySelectorAll('.journey-step').forEach(s=>s.classList.remove('lit'));
+  jIdx=0;
+}
+
+/* ────────────────────────────────────────
+   DOD
+──────────────────────────────────────── */
+const dodItems=[
+  'Register API Works','Login API Works','JWT Generated & Signed',
+  'Auth UI Connected to API','Auth Context Working','Protected Route Working',
+  'Landing Page Completed','Pull Requests Merged','Full Auth Flow Tested',
+];
+const dodGrid=document.getElementById('dodGrid');
+dodItems.forEach((d,i)=>{
+  const el=document.createElement('div');el.className='dod-item';
+  el.style.transitionDelay=i*70+'ms';
+  el.innerHTML=`<div class="dod-check"><i class="fas fa-check"></i></div><div class="dod-text">${d}</div>`;
+  dodGrid.appendChild(el);
+});
+observe('.dod-item');
+observe('.team-card',0);
+observe('.git-line',0);
+
+/* ────────────────────────────────────────
+   GIT LINES STAGGER
+──────────────────────────────────────── */
+const gitObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      document.querySelectorAll('.git-line').forEach((l,i)=>setTimeout(()=>l.classList.add('visible'),i*100));
+    }
+  });
+},{threshold:.3});
+gitObs.observe(document.getElementById('gitTree'));
+
+/* auto-start journey when visible */
+const journeyObs=new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting)startJourney();
+},{threshold:.4});
+journeyObs.observe(document.getElementById('journeyTrack'));
+</script>
+</body>
+</html>
